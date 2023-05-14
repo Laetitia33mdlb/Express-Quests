@@ -22,10 +22,12 @@ const userHandlers = require("./userHandlers");
 app.get("/api/movies", movieHandlers.getMovies);
 app.post("/api/movies", movieHandlers.postMovie);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
+app.put("/api/movies/:id", movieHandlers.updateMovie);
 
 app.get("/api/users", userHandlers.getUsers);
 app.post("/api/users", userHandlers.postUser);
 app.get("/api/users/:id", userHandlers.getUsersById);
+app.put("/api/users/:id", userHandlers.updateUser);
 
 
 app.listen(port, (err) => {
