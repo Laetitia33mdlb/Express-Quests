@@ -1,7 +1,8 @@
 const database = require("./database");
+const auth = require("./auth");
 
 const getUsers = (req, res) => {
-  const initialSql = "select * from users";
+  const initialSql = "select firstname, lastname, email, city, language, idgit add  from users";
   const where = [];
 
   if (req.query.city != null) {
@@ -59,28 +60,28 @@ const postUser = (req, res) => {
   const { firstname, lastname, email, city, language, hashedPassword } =
     req.body;
 
-  database
-    .query(
-      "INSERT INTO users(firstname, lastname, email, city, language, hashedPassword) VALUES (?, ?, ?, ?, ?, ?)",
-      [firstname, lastname, email, city, language, hashedPassword]
-    )
-    .then(([result]) => {
-      res.location(`/api/users/${result.insertId}`).sendStatus(201);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error saving the user");
-    });
-};
+    database
+      .query(
+        "INSERT INTO users(firstname, lastname, email, city, language, hashedPassword) VALUES (?, ?, ?, ?, ?, ?)",
+        [firstname, lastname, email, city, language, hashedPassword]
+      )
+      .then(([result]) => {
+        res.location(`/api/users/${result.insertId}`).sendStatus(201);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error saving the user");
+      });
+  };
 
 const updateUser = (req, res) => {
   const id = parseInt(req.params.id);
-  const { firstname, lastname, email, city, language } = req.body;
+  const { firstname, lastname, email, city, language, hashedPassword } = req.body;
 
   database
     .query(
       "update users set firstname = ?, lastname = ?, email = ?, city = ?, language = ? where id = ?",
-      [firstname, lastname, email, city, language, id]
+      [firstname, lastname, email, city, language, id, hashedPassword]
     )
     .then(([result]) => {
       if (result.affectedRows === 0) {
@@ -111,6 +112,15 @@ const deleteUser = (req, res) => {
       console.error(err);
       res.status(500).send("Error deleting the user");
     });
+};
+
+const argon2 = require("argon2");
+
+const hashingOptions = {
+  type: argon2.argon2id,
+  memoryCost: 2 ** 16,
+  timeCost: 5,
+  parallelism: 1,
 };
 
 module.exports = {
